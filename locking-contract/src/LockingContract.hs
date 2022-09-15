@@ -49,10 +49,10 @@ import           TokenHelper
 -}
 
 lockPid :: PlutusV2.CurrencySymbol
-lockPid = PlutusV2.CurrencySymbol {PlutusV2.unCurrencySymbol = createBuiltinByteString [171, 78, 251, 125, 19, 36, 66, 27, 26, 223, 132, 104, 223, 115, 187, 63, 182, 177, 200, 0, 29, 25, 178, 75, 121, 117, 35, 108] }
+lockPid = PlutusV2.CurrencySymbol {PlutusV2.unCurrencySymbol = createBuiltinByteString [153, 141, 129, 157, 110, 231, 151, 125, 211, 135, 232, 9, 242, 36, 54, 234, 97, 41, 190, 109, 164, 139, 191, 218, 64, 247, 168, 93] }
 
 lockTkn :: PlutusV2.TokenName
-lockTkn = PlutusV2.TokenName {PlutusV2.unTokenName = createBuiltinByteString [115, 116, 97, 114, 116, 101, 114, 95, 116, 111, 107, 101, 110, 95] }
+lockTkn = PlutusV2.TokenName {PlutusV2.unTokenName = createBuiltinByteString [116, 111, 107, 101, 110, 95] }
 
 lockValue :: PlutusV2.Value
 lockValue = Value.singleton lockPid lockTkn (1 :: Integer)
@@ -159,7 +159,7 @@ mkValidator datum redeemer context =
             -- inline datum only
             (PlutusV2.OutputDatum (PlutusV2.Datum d)) -> 
               case PlutusTx.fromBuiltinData d of
-                Nothing     -> isEmbeddedDatumIncreasing xs
+                Nothing     -> isEmbeddedDatumIncreasing xs -- bad data
                 Just inline -> checkDatumIncrease datum inline
         else isEmbeddedDatumIncreasing xs
 

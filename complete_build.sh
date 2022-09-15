@@ -114,7 +114,7 @@ mv next_datum-new.json next_datum.json
 
 # reset datum
 ft=0
-variable=${ft}; jq -r --argjson variable $variable '.fields[1].int=$variable' current_datum.json > current_datum-new.json
+variable=${ft}; jq --argjson variable $variable '.fields[1].int=$variable' current_datum.json > current_datum-new.json
 mv current_datum-new.json current_datum.json
 ft=1
 variable=${ft}; jq -r --argjson variable $variable '.fields[1].int=$variable' next_datum.json > next_datum-new.json

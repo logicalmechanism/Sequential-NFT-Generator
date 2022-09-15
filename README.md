@@ -1,6 +1,6 @@
 # A Sequential NFT Generator
 
-This is a 3 / 8 fork of the tokenization and fractionalization contracts from NEWM, https://github.com/projectNEWM/contracts. It has been strip down into a single signer, single collection, sequential nft generator. This contract will allow a user to mint a very large amount of nfts that are sequential in their name. This means that a name is defined with a prefix like meta_land_ or starter_token_ then it is joined together with the current counter, forming tokens like meta_land_415 and starter_token_0. 
+This is a 3 / 8 fork of the tokenization and fractionalization contracts from NEWM, https://github.com/projectNEWM/contracts. It has been strip down into a single signer, single collection, sequential nft generator. This contract will allow a user to mint a very large amount of nfts that are sequential in their name. This means that a name is defined with a prefix like meta_land_ or starter_token_ then it is joined together with the current counter, forming tokens like meta_land_15 and starter_token_0. 
 
 This contract is very simple but also incredibly useful. A lot of dApps require an NFT to start the contract off. Generating these NFTs can lead centralization and trust issues. These issues can be alleviated by having a contract that gaurantees the user an NFT every time they use it. This is great for projects that fear of the double utxo attack or insider double mint attacks. These fears are now a thing of the past. Projects can now safetly generate actually starter NFTs for their project using this contract.
 
