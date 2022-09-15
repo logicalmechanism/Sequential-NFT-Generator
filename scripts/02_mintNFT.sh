@@ -17,6 +17,7 @@ mint_path="../minting-contract/minting-contract.plutus"
 ft_script_path="../locking-contract/locking-contract.plutus"
 ft_script_address=$(${cli} address build --payment-script-file ${ft_script_path} --testnet-magic ${testnet_magic})
 #
+
 # buyer_address=$(cat wallets/buyer-wallet/payment.addr)
 buyer_address="addr_test1qrupt9d9ug2ufnrrajp2q7gwvmrtzzgr80p5ug7q8nt4d66hu0s5mnhxh2853wtsgn9gdz6wuqtaqnkv0yk78p474d6qudapqh"
 
