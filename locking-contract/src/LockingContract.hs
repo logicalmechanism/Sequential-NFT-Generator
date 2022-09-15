@@ -49,7 +49,7 @@ import           TokenHelper
 -}
 
 lockPid :: PlutusV2.CurrencySymbol
-lockPid = PlutusV2.CurrencySymbol {PlutusV2.unCurrencySymbol = createBuiltinByteString [60, 154, 82, 101, 255, 96, 110, 87, 85, 3, 25, 205, 2, 90, 108, 6, 43, 156, 244, 52, 159, 191, 159, 145, 61, 69, 163, 234] }
+lockPid = PlutusV2.CurrencySymbol {PlutusV2.unCurrencySymbol = createBuiltinByteString [171, 78, 251, 125, 19, 36, 66, 27, 26, 223, 132, 104, 223, 115, 187, 63, 182, 177, 200, 0, 29, 25, 178, 75, 121, 117, 35, 108] }
 
 lockTkn :: PlutusV2.TokenName
 lockTkn = PlutusV2.TokenName {PlutusV2.unTokenName = createBuiltinByteString [115, 116, 97, 114, 116, 101, 114, 95, 116, 111, 107, 101, 110, 95] }

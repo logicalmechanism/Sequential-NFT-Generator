@@ -42,3 +42,34 @@ The start json holds the minter pkh and the cut off for the starter NFT policy. 
 The test scripts are found in the scripts folder. They are numbered for the order. The scripts require a live and fully sync testnet node. Change the testnet.magic file contents to match which ever network you would want to point too. The scripts do assume some wallets that are not included in this repo. Please create the wallets with the cli and use the faucet to receive test funds. There is a seller, buyer, collat, and reference wallet. Enterprise or stake wallets may be used.
 
 The zeroth step is creating script references. This is essential. The seller will send ADA to the reference wallet, two utxos that hold the lock and mint scripts. The first step is minting the starter NFT and prepping with the lock contract with it in one transaction. The policy script is designed to lock in a short time frame to help ensure that the starter token is truly an NFT. The third step is minting an NFT and sending it to some address. The script will auto increment the datum files for a nice automated process. The fourth step is burning some NFT. This requires sending the locked utxo back to the lock contract with the same datum. This will allow any NFT on the policy to be burned.
+
+## Example
+
+
+```bash
+./complete_build.sh starter_token_
+
+# validator sha256sum 
+# 287d793d5ce7b4a6448383509b7fe34ba92065ac3386bb472e7d08079653ea98  ./minting-contract/validator.hash
+# 33132a11a522443a95f19bd3c58a4426ae841117e161454b6d292849e660aab3  ./locking-contract/validator.hash 
+
+# policy sha256sum 
+# 1d8b2b40fbc80e853ef004d9d5be5ccb653b1009d511875855d8b3e6201a91f7  ./minting-contract/policy.id 
+
+# final sha256sum 
+# 7063137fd01bbdefc1be17d3962ba2adc3a9635608c9604323e4d08ef93a8a30  final.check 
+```
+
+```bash
+./00_createReferenceScript.sh
+# FT Locking Min Fee 24321330
+# FT Minting Min Fee 17084840
+
+./01_mintStarterNft.sh
+# Mint OUTPUT: addr_test1wphvv7apftn2eghm20lta0tryqjne8azsyarnjvfvyrky4qm0nxdn + 1439540 + 1 ab4efb7d1324421b1adf8468df73bb3fb6b1c8001d19b24b7975236c.737461727465725f746f6b656e5f
+
+./02_mintNFT.sh
+# Mint OUTPUT: addr_test1qrupt9d9ug2ufnrrajp2q7gwvmrtzzgr80p5ug7q8nt4d66hu0s5mnhxh2853wtsgn9gdz6wuqtaqnkv0yk78p474d6qudapqh + 1193870 + 1 93e8f8d9e635f912483c49c4576929bd31d359e749be32357d5b1338.737461727465725f746f6b656e5f30
+
+./03_burnNFT.sh 0
+```
