@@ -65,26 +65,26 @@ getPkh = PlutusV2.PubKeyHash { PlutusV2.getPubKeyHash = createBuiltinByteString 
 -- | Create the datum parameters data object.
 -------------------------------------------------------------------------------
 data CustomDatumType = CustomDatumType
-  { cdtNewmPid :: PlutusV2.CurrencySymbol
+  { cdtPolicyId :: PlutusV2.CurrencySymbol
   -- ^ The policy id from the minting script.
-  , cdtNumber  :: Integer
+  , cdtNumber   :: Integer
   -- ^ The starting number for the catalog.
-  , cdtPrefix  :: PlutusV2.BuiltinByteString
+  , cdtPrefix   :: PlutusV2.BuiltinByteString
   -- ^ The prefix for a catalog.
   }
 PlutusTx.unstableMakeIsData ''CustomDatumType
 
 checkDatumIncrease :: CustomDatumType -> CustomDatumType -> Bool
-checkDatumIncrease a b =  ( cdtNewmPid    a == cdtNewmPid b ) &&
-                          ( cdtNumber a + 1 == cdtNumber  b ) &&
-                          ( cdtPrefix     a == cdtPrefix  b )
+checkDatumIncrease a b =  ( cdtPolicyId    a == cdtPolicyId b ) &&
+                          ( cdtNumber  a + 1 == cdtNumber   b ) &&
+                          ( cdtPrefix      a == cdtPrefix   b )
 
 -- old === new | burning
 instance Eq CustomDatumType where
   {-# INLINABLE (==) #-}
-  a == b =  ( cdtNewmPid a == cdtNewmPid b ) &&
-            ( cdtNumber  a == cdtNumber  b ) &&
-            ( cdtPrefix  a == cdtPrefix  b )
+  a == b =  ( cdtPolicyId a == cdtPolicyId b ) &&
+            ( cdtNumber   a == cdtNumber   b ) &&
+            ( cdtPrefix   a == cdtPrefix   b )
 -------------------------------------------------------------------------------
 -- | Create the redeemer type.
 -------------------------------------------------------------------------------
@@ -137,14 +137,14 @@ mkValidator datum redeemer context =
     checkMintedAmount :: Bool
     checkMintedAmount =
       case Value.flattenValue (PlutusV2.txInfoMint info) of
-        [(cs, tkn, amt)] -> (cs == cdtNewmPid datum) && (Value.unTokenName tkn == nftName (cdtPrefix datum) (cdtNumber datum)) && (amt == (1 :: Integer))
+        [(cs, tkn, amt)] -> (cs == cdtPolicyId datum) && (Value.unTokenName tkn == nftName (cdtPrefix datum) (cdtNumber datum)) && (amt == (1 :: Integer))
         _                -> traceIfFalse "Incorrect Minting Info" False
     
     -- burning stuff
     checkBurnedAmount :: Bool
     checkBurnedAmount =
       case Value.flattenValue (PlutusV2.txInfoMint info) of
-        [(cs, _, amt)] -> (cs == cdtNewmPid datum) && (amt == (-1 :: Integer))
+        [(cs, _, amt)] -> (cs == cdtPolicyId datum) && (amt == (-1 :: Integer))
         _              -> traceIfFalse "Incorrect Burning Info" False
     
     -- datum stuff
