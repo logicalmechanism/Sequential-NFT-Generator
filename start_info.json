@@ -1,0 +1,9 @@
+{
+  "__comment1__": "This is the primary pkh for minting and burning.",
+  "minter": "a2108b7b1704f9fe12c906096ea1634df8e089c9ccfd651abae4a439",
+  "__comment2__": "The length of time the starter nft policy script is open.",
+  "cutOff": 500,
+  "__comment3__": "These two fields are auto filled with complete_build.sh",
+  "starterPid": "3c9a5265ff606e57550319cd025a6c062b9cf4349fbf9f913d45a3ea",
+  "starterTkn": "737461727465725f746f6b656e5f"
+}
