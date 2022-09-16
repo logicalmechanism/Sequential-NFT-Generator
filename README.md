@@ -10,7 +10,7 @@ The NFT generator comes as a pair of smart contracts. The pair forms something c
 
 ```hs
 data CustomDatumType = CustomDatumType
-  { cdtNewmPid :: PlutusV2.CurrencySymbol
+  { cdtPolicyId :: PlutusV2.CurrencySymbol
   -- ^ The policy id from the minting script.
   , cdtNumber  :: Integer
   -- ^ The starting number for the collection.
