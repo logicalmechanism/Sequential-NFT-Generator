@@ -2,8 +2,7 @@
 index-state: 2022-05-18T00:00:00Z
 
 packages: 
-    locking-contract
-    minting-contract
+    stateless-minting-contract
 
 -- We never, ever, want this.
 write-ghc-environment-files: never
@@ -323,3 +322,9 @@ source-repository-package
   type: git
   location: https://github.com/raduom/hysterical-screams
   tag: f3bbd38a19f99de5c8ddc650c94330b2d09a865b
+
+source-repository-package
+  type: git
+  location: https://github.com/logicalmechanism/useful-funcs
+  tag: 728851d70938b712817c6b93ee544e54e0703171
+  subdir: useful-funcs
