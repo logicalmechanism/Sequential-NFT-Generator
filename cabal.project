@@ -328,3 +328,11 @@ source-repository-package
   location: https://github.com/logicalmechanism/useful-funcs
   tag: 728851d70938b712817c6b93ee544e54e0703171
   subdir: useful-funcs
+
+source-repository-package
+  type: git
+  location: https://github.com/well-typed/plutonomy.git
+  tag: 6c01302ba8cf3be4f71617e106cd5ef7ed10fc63
+
+package plutonomy
+  flags: +plutus-f680ac697

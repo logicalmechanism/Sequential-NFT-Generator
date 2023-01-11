@@ -69,7 +69,7 @@ The zeroth step is creating script references. This is essential. The seller wil
 # Mint OUTPUT: addr_test1wphvv7apftn2eghm20lta0tryqjne8azsyarnjvfvyrky4qm0nxdn + 1439540 + 1 ab4efb7d1324421b1adf8468df73bb3fb6b1c8001d19b24b7975236c.737461727465725f746f6b656e5f
 
 ./02_mintNFT.sh
-# Mint OUTPUT: addr_test1qrupt9d9ug2ufnrrajp2q7gwvmrtzzgr80p5ug7q8nt4d66hu0s5mnhxh2853wtsgn9gdz6wuqtaqnkv0yk78p474d6qudapqh + 1193870 + 1 93e8f8d9e635f912483c49c4576929bd31d359e749be32357d5b1338.737461727465725f746f6b656e5f30
+# Mint OUTPUT: addr_test1qrvnxkaylr4upwxfxctpxpcumj0fl6fdujdc72j8sgpraa9l4gu9er4t0w7udjvt2pqngddn6q4h8h3uv38p8p9cq82qav4lmp + 1193870 + 1 93e8f8d9e635f912483c49c4576929bd31d359e749be32357d5b1338.737461727465725f746f6b656e5f30
 
 ./03_burnNFT.sh 0
 ```

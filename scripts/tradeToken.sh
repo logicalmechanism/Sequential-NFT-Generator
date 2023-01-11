@@ -10,7 +10,7 @@ testnet_magic=$(cat ../testnet.magic)
 # Addresses
 sender_address=$(cat wallets/reference-wallet/payment.addr)
 receiver_address=$(cat wallets/reference-wallet/payment.addr)
-# receiver_address="addr_test1qrupt9d9ug2ufnrrajp2q7gwvmrtzzgr80p5ug7q8nt4d66hu0s5mnhxh2853wtsgn9gdz6wuqtaqnkv0yk78p474d6qudapqh"
+# receiver_address="addr_test1qrvnxkaylr4upwxfxctpxpcumj0fl6fdujdc72j8sgpraa9l4gu9er4t0w7udjvt2pqngddn6q4h8h3uv38p8p9cq82qav4lmp"
 
 # Define Asset to be printed here
 asset="1 0a571be06a74a362abf7fd20378cd3aad2f29d60447458b0b64c9561.737461727465725f746f6b656e5f30"

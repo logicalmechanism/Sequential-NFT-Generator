@@ -38,45 +38,74 @@ import qualified Data.ByteString.Lazy           as LBS
 import qualified Data.ByteString.Short          as SBS
 import qualified Plutus.V1.Ledger.Scripts       as Scripts
 import qualified Plutus.V1.Ledger.Value         as Value
-import qualified Plutus.V2.Ledger.Contexts      as ContextsV2
 import qualified Plutus.V2.Ledger.Api           as PlutusV2
 import           Plutus.Script.Utils.V2.Scripts as Utils
+import qualified Plutonomy
 {-
   Author   : The Ancient Kraken
   Copyright: 2022
   Version  : Rev 1
 -}
+data MintTxInInfo = MintTxInInfo
+    { txInInfoOutRef   :: PlutusV2.TxOutRef
+    , txInInfoResolved :: BuiltinData
+    } 
+PlutusTx.unstableMakeIsData ''MintTxInInfo
+
+data MintTxInfo = MintTxInfo
+    { txInfoInputs          :: [MintTxInInfo] -- Transaction inputs
+    , txInfoReferenceInputs :: BuiltinData
+    , txInfoOutputs         :: BuiltinData
+    , txInfoFee             :: BuiltinData
+    , txInfoMint            :: PlutusV2.Value -- The 'Value' minted by this transaction.
+    , txInfoDCert           :: BuiltinData
+    , txInfoWdrl            :: BuiltinData
+    , txInfoValidRange      :: BuiltinData
+    , txInfoSignatories     :: BuiltinData
+    , txInfoRedeemers       :: BuiltinData
+    , txInfoData            :: BuiltinData
+    , txInfoId              :: BuiltinData
+    }
+PlutusTx.unstableMakeIsData ''MintTxInfo
+
+
+data MintScriptContext = MintScriptContext
+  { scriptContextTxInfo :: MintTxInfo
+  , scriptContextPurpose :: PlutusV2.ScriptPurpose }
+PlutusTx.unstableMakeIsData ''MintScriptContext
+
+ownCurrencySymbol :: MintScriptContext -> PlutusV2.CurrencySymbol
+ownCurrencySymbol MintScriptContext{scriptContextPurpose=PlutusV2.Minting cs} = cs
+ownCurrencySymbol _                                                           = traceError "Lh" -- "Can't get currency symbol of the current validator script"
+
 -------------------------------------------------------------------------------
 {-# INLINABLE mkPolicy #-}
-mkPolicy :: BuiltinData -> PlutusV2.ScriptContext -> Bool
+mkPolicy :: BuiltinData -> MintScriptContext -> Bool
 mkPolicy _ context = do
       { let a = traceIfFalse "Minting" $ checkTokenMint
       ;         traceIfFalse "Error"   $ all (==True) [a]
       }
   where
-    info :: PlutusV2.TxInfo
-    info = PlutusV2.scriptContextTxInfo context
+    info :: MintTxInfo
+    info = scriptContextTxInfo context
 
-    txInputs :: [PlutusV2.TxInInfo]
-    txInputs = ContextsV2.txInfoInputs info
+    txInputs :: [MintTxInInfo]
+    txInputs = txInfoInputs info
 
     firstTx :: PlutusV2.TxOutRef
-    firstTx = PlutusV2.txInInfoOutRef $ head txInputs
+    firstTx = txInInfoOutRef $ head txInputs
 
-    -- check the minting stuff here
-    -- traceIfFalse  (decodeUtf8 $ PlutusV2.unTokenName tkn')
     checkTokenMint :: Bool
     checkTokenMint =
-      case Value.flattenValue (PlutusV2.txInfoMint info) of
-        [(cs, tkn, amt)] -> cs  == ContextsV2.ownCurrencySymbol context &&
-                            tkn == tkn'                                 &&
+      case Value.flattenValue (txInfoMint info) of
+        [(cs, tkn, amt)] -> cs  == ownCurrencySymbol context &&
+                            tkn == tkn'                      &&
                             amt == (1 :: Integer)
-        _                -> traceIfFalse "Mint Error" False
+        _                -> False
       where
         tkn' :: PlutusV2.TokenName
         tkn' =  uniqueTokenName firstTx
 
-    
     uniqueTokenName :: PlutusV2.TxOutRef -> PlutusV2.TokenName
     uniqueTokenName txRef = PlutusV2.TokenName { PlutusV2.unTokenName = hashTxHash txHash index }
       where
@@ -91,12 +120,13 @@ mkPolicy _ context = do
 
         index :: Integer
         index = PlutusV2.txOutRefIdx txRef
-    
 -------------------------------------------------------------------------------
-policy :: PlutusV2.MintingPolicy
-policy = PlutusV2.mkMintingPolicyScript $$(PlutusTx.compile [|| wrap ||])
-  where
-    wrap = Utils.mkUntypedMintingPolicy mkPolicy
+wrappedPolicy :: BuiltinData -> BuiltinData -> ()
+wrappedPolicy x y = check (mkPolicy (PlutusV2.unsafeFromBuiltinData x) (PlutusV2.unsafeFromBuiltinData y))
+
+policy :: MintingPolicy
+policy = PlutusV2.mkMintingPolicyScript $
+  $$(PlutusTx.compile [|| wrappedPolicy ||])
 
 plutusScript :: Scripts.Script
 plutusScript = PlutusV2.unMintingPolicyScript policy
@@ -104,8 +134,14 @@ plutusScript = PlutusV2.unMintingPolicyScript policy
 validator :: PlutusV2.Validator
 validator = PlutusV2.Validator plutusScript
 
+optimizerSettings :: Plutonomy.OptimizerOptions
+optimizerSettings = Plutonomy.defaultOptimizerOptions
+  { Plutonomy.ooSplitDelay     = False
+  , Plutonomy.ooFloatOutLambda = False
+  }
+
 scriptAsCbor :: LBS.ByteString
-scriptAsCbor = serialise validator
+scriptAsCbor = serialise $ Plutonomy.optimizeUPLCWith optimizerSettings $ validator
 
 mintingPlutusScript :: PlutusScript PlutusScriptV2
 mintingPlutusScript = PlutusScriptSerialised . SBS.toShort $ LBS.toStrict scriptAsCbor

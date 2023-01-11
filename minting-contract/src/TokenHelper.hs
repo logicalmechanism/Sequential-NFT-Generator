@@ -81,4 +81,4 @@ baseQ number base = baseQ' number base []
     baseQ' number' base' list = do
       if number' == 0
       then list
-      else baseQ' (Internal.divideInteger number' base') base' (Internal.modInteger number' base' : list)
+      else baseQ' (divide number' base') base' (modulo number' base' : list)
