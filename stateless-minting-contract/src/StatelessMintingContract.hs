@@ -69,7 +69,8 @@ PlutusTx.unstableMakeIsData ''MintTxInfo
 
 data MintScriptContext = MintScriptContext
   { scriptContextTxInfo :: MintTxInfo
-  , scriptContextPurpose :: PlutusV2.ScriptPurpose }
+  , scriptContextPurpose :: PlutusV2.ScriptPurpose 
+  }
 PlutusTx.unstableMakeIsData ''MintScriptContext
 
 ownCurrencySymbol :: MintScriptContext -> PlutusV2.CurrencySymbol
@@ -131,14 +132,14 @@ plutusScript = PlutusV2.unMintingPolicyScript policy
 validator :: PlutusV2.Validator
 validator = PlutusV2.Validator plutusScript
 
-optimizerSettings :: Plutonomy.OptimizerOptions
-optimizerSettings = Plutonomy.defaultOptimizerOptions
-  { Plutonomy.ooSplitDelay     = False
-  , Plutonomy.ooFloatOutLambda = False
-  }
+-- optimizerSettings :: Plutonomy.OptimizerOptions
+-- optimizerSettings = Plutonomy.defaultOptimizerOptions
+--   { Plutonomy.ooSplitDelay     = False
+--   , Plutonomy.ooFloatOutLambda = False
+--   }
 
 scriptAsCbor :: LBS.ByteString
-scriptAsCbor = serialise $ Plutonomy.optimizeUPLCWith optimizerSettings $ validator
+scriptAsCbor = serialise $ Plutonomy.optimizeUPLCWith Plutonomy.aggressiveOptimizerOptions $ validator
 
 mintingPlutusScript :: PlutusScript PlutusScriptV2
 mintingPlutusScript = PlutusScriptSerialised . SBS.toShort $ LBS.toStrict scriptAsCbor
