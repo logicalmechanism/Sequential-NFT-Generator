@@ -44,7 +44,6 @@ import qualified Plutonomy
 {-
   Author   : The Ancient Kraken
   Copyright: 2022
-  Version  : Rev 1
 -}
 data MintTxInInfo = MintTxInInfo
     { txInInfoOutRef   :: PlutusV2.TxOutRef
@@ -68,7 +67,6 @@ data MintTxInfo = MintTxInfo
     }
 PlutusTx.unstableMakeIsData ''MintTxInfo
 
-
 data MintScriptContext = MintScriptContext
   { scriptContextTxInfo :: MintTxInfo
   , scriptContextPurpose :: PlutusV2.ScriptPurpose }
@@ -77,7 +75,6 @@ PlutusTx.unstableMakeIsData ''MintScriptContext
 ownCurrencySymbol :: MintScriptContext -> PlutusV2.CurrencySymbol
 ownCurrencySymbol MintScriptContext{scriptContextPurpose=PlutusV2.Minting cs} = cs
 ownCurrencySymbol _                                                           = traceError "Lh" -- "Can't get currency symbol of the current validator script"
-
 -------------------------------------------------------------------------------
 {-# INLINABLE mkPolicy #-}
 mkPolicy :: BuiltinData -> MintScriptContext -> Bool
