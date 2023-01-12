@@ -67,7 +67,7 @@ data MintTxInfo = MintTxInfo
 PlutusTx.unstableMakeIsData ''MintTxInfo
 
 -- | Purpose of the script that is currently running
-data MintScriptPurpose = Minting PlutusV2.CurrencySymbol | BuiltinData
+data MintScriptPurpose = Minting PlutusV2.CurrencySymbol
 PlutusTx.unstableMakeIsData ''MintScriptPurpose
 
 data MintScriptContext = MintScriptContext
@@ -78,7 +78,6 @@ PlutusTx.unstableMakeIsData ''MintScriptContext
 
 ownCurrencySymbol :: MintScriptContext -> PlutusV2.CurrencySymbol
 ownCurrencySymbol MintScriptContext{scriptContextPurpose=Minting cs} = cs
-ownCurrencySymbol _                                                  = traceError "Lh"
 -------------------------------------------------------------------------------
 {-# INLINABLE mkPolicy #-}
 mkPolicy :: BuiltinData -> MintScriptContext -> Bool
