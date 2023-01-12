@@ -43,7 +43,7 @@ import           Plutus.Script.Utils.V2.Scripts as Utils
 import qualified Plutonomy
 {-
   Author   : The Ancient Kraken
-  Copyright: 2022
+  Copyright: 2023
 -}
 data MintTxInInfo = MintTxInInfo
     { txInInfoOutRef   :: PlutusV2.TxOutRef
@@ -81,7 +81,8 @@ ownCurrencySymbol _                                                           = 
 mkPolicy :: BuiltinData -> MintScriptContext -> Bool
 mkPolicy _ context = do
       { let a = traceIfFalse "Minting" $ checkTokenMint
-      ;         traceIfFalse "Error"   $ all (==True) [a]
+      ; let b = traceIfFalse "2 much"  $ PlutusV2.txOutRefIdx firstTx < 255
+      ;         traceIfFalse "Error"   $ all (==True) [a,b]
       }
   where
     info :: MintTxInfo
@@ -93,6 +94,7 @@ mkPolicy _ context = do
     firstTx :: PlutusV2.TxOutRef
     firstTx = txInInfoOutRef $ head txInputs
 
+    -- traceIfFalse (decodeUtf8 $ PlutusV2.unTokenName tkn')
     checkTokenMint :: Bool
     checkTokenMint =
       case Value.flattenValue (txInfoMint info) of
@@ -105,13 +107,10 @@ mkPolicy _ context = do
         tkn' =  uniqueTokenName firstTx
 
     uniqueTokenName :: PlutusV2.TxOutRef -> PlutusV2.TokenName
-    uniqueTokenName txRef = PlutusV2.TokenName { PlutusV2.unTokenName = hashTxHash txHash index }
+    uniqueTokenName txRef = PlutusV2.TokenName { PlutusV2.unTokenName = prependTxHash txHash index }
       where
-        hashTxHash :: PlutusV2.BuiltinByteString -> Integer -> PlutusV2.BuiltinByteString
-        hashTxHash string counter =
-          if counter == 0
-            then sha3_256 string
-            else hashTxHash (sha3_256 string) (counter - 1)
+        prependTxHash :: PlutusV2.BuiltinByteString -> Integer -> PlutusV2.BuiltinByteString
+        prependTxHash string counter = sliceByteString 0 32 (consByteString counter (sha3_256 string))
 
         txHash :: PlutusV2.BuiltinByteString
         txHash = PlutusV2.getTxId $ PlutusV2.txOutRefId txRef
@@ -131,12 +130,6 @@ plutusScript = PlutusV2.unMintingPolicyScript policy
 
 validator :: PlutusV2.Validator
 validator = PlutusV2.Validator plutusScript
-
--- optimizerSettings :: Plutonomy.OptimizerOptions
--- optimizerSettings = Plutonomy.defaultOptimizerOptions
---   { Plutonomy.ooSplitDelay     = False
---   , Plutonomy.ooFloatOutLambda = False
---   }
 
 scriptAsCbor :: LBS.ByteString
 scriptAsCbor = serialise $ Plutonomy.optimizeUPLCWith Plutonomy.aggressiveOptimizerOptions $ validator

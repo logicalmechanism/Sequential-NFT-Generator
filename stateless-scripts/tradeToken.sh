@@ -13,7 +13,7 @@ receiver_address=$(cat wallets/seller-wallet/payment.addr)
 # receiver_address="addr_test1qrvnxkaylr4upwxfxctpxpcumj0fl6fdujdc72j8sgpraa9l4gu9er4t0w7udjvt2pqngddn6q4h8h3uv38p8p9cq82qav4lmp"
 
 # Define Asset to be printed here
-asset="12345 f61e1c1d38fc4e5b0734329a4b7b820b76bb8e0729458c153c4248ea.5468697349734f6e6553746172746572546f6b656e466f7254657374696e6739"
+asset="1 9e70589a8dd23fd55f65198dc9e9a135751690d6bb3a63f7c28389ef.23644d1d72b3dd229bcbef0471a9778dcc60923301704124954cff7bd3e9de04"
 
 min_utxo=$(${cli} transaction calculate-min-required-utxo \
     --babbage-era \
@@ -51,9 +51,9 @@ FEE=$(${cli} transaction build \
     --tx-in ${HEXTXIN} \
     --testnet-magic ${testnet_magic})
 
-    # --tx-out="${receiver_address} + 100000000" \
-    # --tx-out="${token_to_be_traded}" \
+    # --tx-out="${receiver_address} + 5000000000" \
     # --tx-out="${change_to_be_traded}" \
+    # --tx-out="${token_to_be_traded}" \
 IFS=':' read -ra VALUE <<< "${FEE}"
 IFS=' ' read -ra FEE <<< "${VALUE[1]}"
 FEE=${FEE[1]}

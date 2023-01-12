@@ -48,7 +48,9 @@ echo $seller_tx_in
 string=${seller_tx_in}
 IFS='#' read -ra array <<< "$string"
 
-name=$(python3 -c "from getTokenName import print_token; print_token('${array[0]}', ${array[1]})")
+# name=$(python3 -c "from getTokenName import print_token; print_token('${array[0]}', ${array[1]})")
+name=$(python3 -c "from getTokenName import print_hex; print_hex('${array[0]}', ${array[1]})")
+
 # exit
 MINT_ASSET="1 ${policy_id}.${name}"
 
