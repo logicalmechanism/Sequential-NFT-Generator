@@ -28,7 +28,6 @@
 {-# OPTIONS_GHC -fexpose-all-unfoldings       #-}
 module StatelessMintingContract
   ( mintingPlutusScript
-  , mintingScriptShortBs
   ) where
 import qualified PlutusTx
 import           PlutusTx.Prelude
@@ -81,7 +80,7 @@ ownCurrencySymbol _                                                           = 
 mkPolicy :: BuiltinData -> MintScriptContext -> Bool
 mkPolicy _ context = do
       { let a = traceIfFalse "Minting" $ checkTokenMint
-      ; let b = traceIfFalse "2 much"  $ PlutusV2.txOutRefIdx firstTx < 255
+      ; let b = traceIfFalse "2 much"  $ PlutusV2.txOutRefIdx firstTx < 256
       ;         traceIfFalse "Error"   $ all (==True) [a,b]
       }
   where
@@ -122,8 +121,7 @@ wrappedPolicy :: BuiltinData -> BuiltinData -> ()
 wrappedPolicy x y = check (mkPolicy (PlutusV2.unsafeFromBuiltinData x) (PlutusV2.unsafeFromBuiltinData y))
 
 policy :: MintingPolicy
-policy = PlutusV2.mkMintingPolicyScript $
-  $$(PlutusTx.compile [|| wrappedPolicy ||])
+policy = PlutusV2.mkMintingPolicyScript $ $$(PlutusTx.compile [|| wrappedPolicy ||])
 
 plutusScript :: Scripts.Script
 plutusScript = PlutusV2.unMintingPolicyScript policy
@@ -136,6 +134,3 @@ scriptAsCbor = serialise $ Plutonomy.optimizeUPLCWith Plutonomy.aggressiveOptimi
 
 mintingPlutusScript :: PlutusScript PlutusScriptV2
 mintingPlutusScript = PlutusScriptSerialised . SBS.toShort $ LBS.toStrict scriptAsCbor
-
-mintingScriptShortBs :: SBS.ShortByteString
-mintingScriptShortBs = SBS.toShort . LBS.toStrict $ scriptAsCbor

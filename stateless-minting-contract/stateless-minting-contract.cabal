@@ -54,7 +54,6 @@ library
                       , plutus-tx-plugin
                       , plutus-script-utils
                       , serialise
-                      , useful-funcs
                       , plutonomy
 
   ghc-options: -fobject-code -fno-ignore-interface-pragmas -fno-omit-interface-pragmas
