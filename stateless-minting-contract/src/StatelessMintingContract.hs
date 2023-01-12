@@ -66,44 +66,38 @@ data MintTxInfo = MintTxInfo
     }
 PlutusTx.unstableMakeIsData ''MintTxInfo
 
+-- | Purpose of the script that is currently running
+data MintScriptPurpose = Minting PlutusV2.CurrencySymbol | BuiltinData
+PlutusTx.unstableMakeIsData ''MintScriptPurpose
+
 data MintScriptContext = MintScriptContext
   { scriptContextTxInfo :: MintTxInfo
-  , scriptContextPurpose :: PlutusV2.ScriptPurpose 
+  , scriptContextPurpose :: MintScriptPurpose 
   }
 PlutusTx.unstableMakeIsData ''MintScriptContext
 
 ownCurrencySymbol :: MintScriptContext -> PlutusV2.CurrencySymbol
-ownCurrencySymbol MintScriptContext{scriptContextPurpose=PlutusV2.Minting cs} = cs
-ownCurrencySymbol _                                                           = traceError "Lh" -- "Can't get currency symbol of the current validator script"
+ownCurrencySymbol MintScriptContext{scriptContextPurpose=Minting cs} = cs
+ownCurrencySymbol _                                                  = traceError "Lh"
 -------------------------------------------------------------------------------
 {-# INLINABLE mkPolicy #-}
 mkPolicy :: BuiltinData -> MintScriptContext -> Bool
-mkPolicy _ context = do
-      { let a = traceIfFalse "Minting" $ checkTokenMint
-      ; let b = traceIfFalse "2 much"  $ PlutusV2.txOutRefIdx firstTx < 256
-      ;         traceIfFalse "Error"   $ all (==True) [a,b]
-      }
+mkPolicy _ context = checkTokenMint && PlutusV2.txOutRefIdx firstTx < 256
   where
     info :: MintTxInfo
     info = scriptContextTxInfo context
 
-    txInputs :: [MintTxInInfo]
-    txInputs = txInfoInputs info
-
     firstTx :: PlutusV2.TxOutRef
-    firstTx = txInInfoOutRef $ head txInputs
+    firstTx = txInInfoOutRef $ head $ txInfoInputs info
 
     -- traceIfFalse (decodeUtf8 $ PlutusV2.unTokenName tkn')
     checkTokenMint :: Bool
     checkTokenMint =
       case Value.flattenValue (txInfoMint info) of
         [(cs, tkn, amt)] -> cs  == ownCurrencySymbol context &&
-                            tkn == tkn'                      &&
+                            tkn == uniqueTokenName firstTx   &&
                             amt == (1 :: Integer)
         _                -> False
-      where
-        tkn' :: PlutusV2.TokenName
-        tkn' =  uniqueTokenName firstTx
 
     uniqueTokenName :: PlutusV2.TxOutRef -> PlutusV2.TokenName
     uniqueTokenName txRef = PlutusV2.TokenName { PlutusV2.unTokenName = prependTxHash txHash index }
